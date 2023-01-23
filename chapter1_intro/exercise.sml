@@ -95,9 +95,47 @@ and interpExp (IdExp id, t) =
     end
 fun interp(stm) = let val t = interpStm(stm, []) in () end
 
-
 end
 
+(* exercises 1.1 *)
+type key = string
+datatype tree = LEAF | TREE of tree * key * tree
+val empty = LEAF
+fun insert(key, LEAF) = TREE(LEAF, key, LEAF)
+  | insert(key, TREE(l,k,r)) =
+    if key < k then TREE(insert(key,l), k, r)
+    else if key>k then TREE(l,k,insert(key,r))
+(* the original node will be replaced *)
+    else TREE(l, key, r)
 
+(* Implement a member function that returns true if the item is found, else false. *)
+
+fun member (key, LEAF) = false
+  | member (key, TREE(l, k, r)) =
+    if key = k then true
+    else if key < k then member(key, l)
+    else member(key, r)
+
+
+(* Extend the program to include not just membership, but the mapping of keys to bindings: *)
+
+structure KeyValBST =
+struct
+type key = string
+datatype 'a tree = LEAF | TREE of 'a tree * key * 'a * 'a tree
+val empty = LEAF
+
+fun insert(LEAF, key, value) = TREE(LEAF, key, value, LEAF)
+  | insert(TREE(l,k,v,r), key, value) =
+    if key < k then TREE(insert(l, key, value), k, v, r)
+    else if key > k then TREE(l, k, v, insert(r, key, value))
+    else TREE(l, key, value, r)
+
+fun lookup(LEAF, key) = NONE
+  | lookup(TREE(l, k, v, r), key) =
+    if key = k then SOME(v)
+    else if key < k then lookup(l, key)
+    else lookup(r, key)
+end
 
 
