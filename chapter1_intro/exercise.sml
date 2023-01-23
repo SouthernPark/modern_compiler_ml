@@ -25,4 +25,79 @@ and maxargs_exp (IdExp x) = 0
 
 
 
+(*
+Write an ML function interp : stm->unit that "interprets" a program
+in
+this language. To write in a "functional" style - without assignment (: =) or
+arrays
+maintain a list of (variable,integer) pairs, and produce new versions
+of this list at each AssignStm
+*)
+
+structure MyInterpreter :>
+          sig
+            val interp: stm -> unit
+          end =
+
+struct
+type table = string*int list
+
+(* add pair (id, value) as the first element of the list *)
+fun update(table, id, value) = (id, value) :: table
+
+(* find the first id in the table and return its value *)
+fun lookup([], id) = 0
+  | lookup((ele, value)::l, id) = if ele = id then value else lookup(l, id)
+
+
+fun interpStm (CompoundStm(stm1, stm2), t) =
+    let val t = interpStm(stm1, t)
+        val t = interpStm(stm2, t)
+    in
+      t
+    end
+  | interpStm (AssignStm(id, exp), t) =
+    let val (value, t) = interpExp(exp, t)
+        val t = update(t, id, value)
+    in
+      t
+    end
+  | interpStm (PrintStm [], t) = t
+  | interpStm (PrintStm (exp::lst), t)=
+    let val (value, t) = interpExp(exp, t)
+        val () = print(Int.toString(value) ^ "\n")
+    in
+      interpStm(PrintStm lst, t)
+    end
+
+and interpExp (IdExp id, t) =
+    let val value = lookup(t, id)
+    in
+      (value, t)
+    end
+  | interpExp (NumExp num, t) = (num, t)
+  | interpExp (OpExp(exp1, binop, exp2), t) =
+    let val (value1, t) = interpExp(exp1, t)
+        val (value2, t) = interpExp(exp2, t)
+        val value = case binop of
+                        Plus => value1 + value2
+                      | Minus => value1 - value2
+                      | Times => value1 * value2
+                      | Div => value1 div value2
+    in
+      (value, t)
+    end
+  | interpExp (EseqExp(stm, exp), t) =
+    let val t = interpStm(stm, t)
+        val (value, t) = interpExp(exp, t)
+    in
+      (value, t)
+    end
+fun interp(stm) = let val t = interpStm(stm, []) in () end
+
+
+end
+
+
+
 

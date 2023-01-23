@@ -31,11 +31,7 @@ val prog1 =
 val prog2 = AssignStm("a",OpExp(NumExp 5, Plus, NumExp 3))
 
 (*
-
 PrintStm[IdExp"a", IdExp"a", IdExp"a", IdExp"a"]
-
-
-
 *)
 
 
