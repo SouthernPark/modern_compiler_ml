@@ -44,7 +44,7 @@ structure Calc =
         if i = "ONE" then 1
         else if i = "TWO" then 2
         else  (say ("calc: unknown identifier '" ^ i ^ "'\n"); raise Error)
-     fun STMT_LIST () =
+      fun STMT_LIST () =
          case !nexttok of
             EOF => ()
           | _ => (STMT(); STMT_LIST())
@@ -86,6 +86,7 @@ structure Calc =
               end
           | NUM i => (advance(); i)
           | _ => error()
-    in STMT_LIST () handle Error => parse strm
+    in
+      STMT_LIST () handle Error => parse strm
     end
  end

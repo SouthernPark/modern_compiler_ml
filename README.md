@@ -10,6 +10,10 @@ test_frameword.sml contains a "general_test" function I wrote to test if a funct
 some chapter exercise may also contain "sources.cm" which is used to load library.
 use the following command in sml compiler to load those libs:
 
-    	CM.make "sources.cm"
+```
+CM.make "sources.cm"
+```
+
+
 
 
